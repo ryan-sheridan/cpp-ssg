@@ -1,4 +1,5 @@
 #include "FileManager.hpp"
+#include "Generator.hpp"
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -10,6 +11,21 @@ FileNode::~FileNode() {
   for (FileNode *child : children) {
     delete child;
   }
+}
+
+std::string FileNode::replaceTopLevelDir(const std::string &new_root) {
+  std::filesystem::path new_path = new_root;
+
+  // skip first element, "eg. blog_src"
+  auto it = path.begin();
+  ++it;
+
+  for (; it != path.end(); ++it) {
+    // TODO: what the hell, how does this work with /
+    new_path /= *it;
+  }
+
+  return new_path;
 }
 
 // constructor to build graph from base path
@@ -78,14 +94,43 @@ void FileStructureTree::traverseAndPrint(FileNode *node, int depth) const {
   }
 }
 
-void FileStructureTree::traverseAndBuildDist(FileNode *node, std::filesystem::path out_path, int depth) const {
+void FileStructureTree::traverseConvertAndBuildDist(
+    FileNode *node, std::filesystem::path root_path, int depth) const {
+
   // create dist folder if does not exist
-  if(!std::filesystem::is_directory(out_path) || !std::filesystem::exists(out_path)) {
-    std::filesystem::create_directory(out_path);
+  if (!std::filesystem::is_directory(root_path) ||
+      !std::filesystem::exists(root_path)) {
+    std::filesystem::create_directory(root_path);
   }
 
+  // create final out path for file or dir
+  std::filesystem::path out_path = node->replaceTopLevelDir(root_path);
 
+  // if its a directory, we create it
+  if (node->is_directory) {
+    std::filesystem::create_directory(out_path);
+  } else if (node->markdown_content.has_value()) {
+    // convert to html
+    std::string html =
+      Generator::convertToHtml(node->markdown_content->content);
+    // if the final out path is not a directory
+    if (!std::filesystem::is_directory(out_path)) {
+      // create parent directories if they don't exist
+      std::filesystem::create_directories(out_path.parent_path());
 
+      // open/create file for writing
+      std::ofstream o(out_path);
+      if (!o) {
+        throw std::runtime_error("failed to open '" +
+                                 out_path.generic_string() + "' for writing");
+      }
+      // write to file
+      o << html << std::endl;
+    }
+  }
+  for (FileNode *child : node->children) {
+    traverseConvertAndBuildDist(child, root_path, depth + 1);
+  }
 }
 
 // FileManager

@@ -15,7 +15,8 @@ private:
   std::vector<std::string> expected_paths;
   FileManager fm;
 public:
-  Generator(std::string src_path, std::optional<std::string> out_path = nullptr);
+  Generator(std::string src_path, std::optional<std::string> out_path = std::nullopt);
+  static std::string convertToHtml(std::string content);
 };
 
 #endif // GENERATOR_H,

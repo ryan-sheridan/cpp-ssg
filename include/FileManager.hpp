@@ -15,6 +15,10 @@ public:
   bool is_directory;
   std::optional<Markdown> markdown_content; // if its a file
   std::vector<FileNode*> children; // for directorys
+  std::optional<std::string> dist_root;
+
+  // replaces the top level dir with the new root (used for out path)
+  std::string replaceTopLevelDir(const std::string& new_root);
 
   // constructor for directory node
   FileNode(const std::filesystem::path& p, bool is_dir)
@@ -38,7 +42,7 @@ public:
   FileStructureTree(const std::filesystem::path& base_path);
   FileNode *getRoot() const;
   void traverseAndPrint(FileNode* node, int depth = 0) const;
-  void traverseAndBuildDist(FileNode *node, std::filesystem::path out_path, int depth = 0) const;
+  void traverseConvertAndBuildDist(FileNode *node, std::filesystem::path out_path, int depth = 0) const;
 };
 
 class FileManager {

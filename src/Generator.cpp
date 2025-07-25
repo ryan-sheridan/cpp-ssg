@@ -12,11 +12,10 @@ Generator::Generator(std::string src_path, std::optional<std::string> out_path)
     std::cout << "\nreading files and building tree..." << std::endl;
     std::unique_ptr<FileStructureTree> tree = fm.readFiles();
 
-    std::cout << "\ntraversing the file structure tree:" << std::endl;
+    std::cout << "\ntraversing, converting, and building dist..." << std::endl;
     if (tree) {
-      tree->traverseAndPrint(tree->getRoot());
       if(out_path.has_value()) {
-        tree->traverseAndBuildDist(tree->getRoot(), out_path.value_or(DEFAULT_OUT_PATH));
+        tree->traverseConvertAndBuildDist(tree->getRoot(), out_path.value_or(DEFAULT_OUT_PATH));
       }
     }
   } catch(const std::runtime_error& e) {
@@ -24,3 +23,16 @@ Generator::Generator(std::string src_path, std::optional<std::string> out_path)
   }
 }
 
+std::string Generator::convertToHtml(std::string content) {
+  // config
+  std::shared_ptr<maddy::ParserConfig> config = std::make_shared<maddy::ParserConfig>();
+  // do not wrap in paragraph
+  config->enabledParsers |= maddy::types::HTML_PARSER;
+  // create parser
+  std::shared_ptr<maddy::Parser> parser = std::make_shared<maddy::Parser>(config);
+  // convert to strstream
+  std::stringstream content_ss(content);
+
+  // return parsed html
+  return parser->Parse(content_ss);
+}
