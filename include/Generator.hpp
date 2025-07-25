@@ -1,19 +1,21 @@
 #ifndef GENERATOR_H
 #define GENERATOR_H
 
-#include <filesystem>
 #include <iostream>
+#include <fstream>
+#include <memory>
+#include <stdexcept>
 #include <maddy/parser.h>
+#include "FileManager.hpp"
 
-class Markdown {
+#define DEFAULT_OUT_PATH "./dist"
+
+class Generator {
+private:
+  std::vector<std::string> expected_paths;
+  FileManager fm;
 public:
-  std::filesystem::path file_path;
-  std::string content;
-
-  Markdown(const std::filesystem::path &path, const std::string &md_content)
-      : file_path(path), content(md_content) {}
-
-  // parse md, extract metadeta, etc
+  Generator(std::string src_path, std::optional<std::string> out_path = nullptr);
 };
 
 #endif // GENERATOR_H,

@@ -6,7 +6,7 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include "Generator.hpp"
+#include "Markdown.hpp"
 
 // can be file or dir
 class FileNode {
@@ -38,6 +38,7 @@ public:
   FileStructureTree(const std::filesystem::path& base_path);
   FileNode *getRoot() const;
   void traverseAndPrint(FileNode* node, int depth = 0) const;
+  void traverseAndBuildDist(FileNode *node, std::filesystem::path out_path, int depth = 0) const;
 };
 
 class FileManager {

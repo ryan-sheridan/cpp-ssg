@@ -78,6 +78,16 @@ void FileStructureTree::traverseAndPrint(FileNode *node, int depth) const {
   }
 }
 
+void FileStructureTree::traverseAndBuildDist(FileNode *node, std::filesystem::path out_path, int depth) const {
+  // create dist folder if does not exist
+  if(!std::filesystem::is_directory(out_path) || !std::filesystem::exists(out_path)) {
+    std::filesystem::create_directory(out_path);
+  }
+
+
+
+}
+
 // FileManager
 
 FileManager::FileManager(std::vector<std::string> expected_root_paths) {
