@@ -4,6 +4,8 @@
 #include <iostream>
 #include <filesystem>
 #include <optional>
+#include <string>
+#include <vector>
 #include "Generator.hpp"
 
 // can be file or dir
@@ -26,22 +28,36 @@ public:
   ~FileNode();
 };
 
+class FileStructureTree {
+private:
+  std::unique_ptr<FileNode> root_node;
+  // oul helper
+  void buildTreeRecursive(FileNode* current_node, const std::filesystem::path& current_path);
+public:
+  // build tree from base path
+  FileStructureTree(const std::filesystem::path& base_path);
+  FileNode *getRoot() const;
+  void traverseAndPrint(FileNode* node, int depth = 0) const;
+};
+
 class FileManager {
 private:
   std::optional<std::filesystem::path> src_path;
-  std::vector<Markdown> src;
+  std::vector<std::string> root_paths;
 public:
-  // validates the src file structure of basePath to make sure it matches a blog site
-  void validateFileStructure();
-
+  FileManager(std::vector<std::string> expected_root_paths);
   // const tells compiler this function will not modify any member variables of the class
   bool isBasePathSet() const;
 
   // sets the basePath we need to work with
   void setBasePath(const std::filesystem::path& path);
 
+  // validates the src file structure of basePath to make sure it matches a blog site
+  // check for specific directorys, posts, assets
+  void validateFileStructure();
+
   // read markdown file
-  Markdown readFile();
+  std::unique_ptr<FileStructureTree> readFiles();
 };
 
 #endif // FILEMANAGER_H
