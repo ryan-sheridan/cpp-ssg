@@ -22,7 +22,11 @@ Generator::Generator(std::string src_path, std::optional<std::string> out_path)
   }
 }
 
-std::string Generator::convertToHtml(std::string content) {
+YAML::Node Generator::extractAndRemoveMetadata(Markdown& md) {
+
+}
+
+std::string Generator::convertToHtml(Markdown& md) {
   // config
   std::shared_ptr<maddy::ParserConfig> config =
       std::make_shared<maddy::ParserConfig>();
@@ -31,6 +35,9 @@ std::string Generator::convertToHtml(std::string content) {
   // create parser
   std::shared_ptr<maddy::Parser> parser =
       std::make_shared<maddy::Parser>(config);
+
+  auto metadata = extractAndRemoveMetadata(md);
+
   // convert to strstream
   std::stringstream content_ss(content);
 

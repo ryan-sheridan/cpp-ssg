@@ -7,6 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories(include)
 include_directories(external/maddy/include)
+add_subdirectory(external/yaml-cpp)
 
 file(GLOB SOURCES "src/*.cpp")
 
