@@ -1,3 +1,9 @@
 [submodule "maddy"]
 	path = maddy
 	url = https://github.com/progsource/maddy
+[submodule "external/yaml-cpp"]
+	path = external/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp
+[submodule "external/maddy"]
+	path = external/maddy
+	url = https://github.com/progsource/maddy
