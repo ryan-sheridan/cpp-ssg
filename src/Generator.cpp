@@ -1,5 +1,6 @@
 #include "Generator.hpp"
 #include "FileManager.hpp"
+#include <stdexcept>
 
 Generator::Generator(std::string src_path, std::optional<std::string> out_path)
     : expected_paths{"posts", "pages", "assets"}, fm(expected_paths) {
@@ -59,7 +60,7 @@ std::optional<YAML::Node> Generator::extractAndRemoveMetadata(Markdown& md) {
   }
 }
 
-std::string Generator::convertToHtml(Markdown& md) {
+HtmlDocument Generator::convertToHtml(Markdown& md) {
   // config
   std::shared_ptr<maddy::ParserConfig> config =
       std::make_shared<maddy::ParserConfig>();
@@ -78,6 +79,27 @@ std::string Generator::convertToHtml(Markdown& md) {
   // convert to strstream
   std::stringstream content_ss(md.content);
 
-  // return parsed html
-  return parser->Parse(content_ss);
+  // create html document
+  HtmlDocument hd;
+  hd.metadata = metadata;
+  hd.content = parser->Parse(content_ss);
+
+  // return html document with metadata and content
+  return hd;
+}
+
+
+HTML Generator::transformDocumentWithTemplate(std::filesystem::path template_path, HtmlDocument hd) {
+  if(!std::filesystem::exists(template_path)) {
+    // no formatting required
+    return (HTML)hd.content;
+  }
+
+  if(template_path.extension() == ".rhtml") {
+    // todo
+  } else {
+
+    throw std::runtime_error("template_path does not exist");
+  }
+
 }

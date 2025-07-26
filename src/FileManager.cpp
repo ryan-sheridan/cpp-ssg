@@ -111,8 +111,11 @@ void FileStructureTree::traverseConvertAndBuildDist(
     std::filesystem::create_directory(out_path);
   } else if (node->markdown_content.has_value()) {
     // convert to html
-    std::string html =
+    HtmlDocument hd =
       Generator::convertToHtml(node->markdown_content.value());
+
+    std::string html_content = hd.content;
+
     // if the final out path is not a directory
     if (!std::filesystem::is_directory(out_path)) {
       // create parent directories if they don't exist
@@ -128,7 +131,7 @@ void FileStructureTree::traverseConvertAndBuildDist(
                                  out_path.generic_string() + "' for writing");
       }
       // write to file
-      o << html << std::endl;
+      o << html_content << std::endl;
     }
   }
   for (FileNode *child : node->children) {
