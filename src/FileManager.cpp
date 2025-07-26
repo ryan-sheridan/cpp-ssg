@@ -112,11 +112,14 @@ void FileStructureTree::traverseConvertAndBuildDist(
   } else if (node->markdown_content.has_value()) {
     // convert to html
     std::string html =
-      Generator::convertToHtml(node->markdown_content->content);
+      Generator::convertToHtml(node->markdown_content.value());
     // if the final out path is not a directory
     if (!std::filesystem::is_directory(out_path)) {
       // create parent directories if they don't exist
       std::filesystem::create_directories(out_path.parent_path());
+
+      // replace .md with .html
+      out_path.replace_extension(".html");
 
       // open/create file for writing
       std::ofstream o(out_path);
